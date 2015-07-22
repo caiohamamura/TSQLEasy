@@ -10,6 +10,7 @@ from datetime import datetime
 import tempfile
 import sublime
 import sublime_plugin
+from time import sleep
 
 pythonver = sys.version_info[0]
 if pythonver >= 3:
@@ -403,8 +404,13 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         # self.view.set_syntax_file('Packages/TSQLEasy/TSQL.tmLanguage')
         position = self.view.sel()[0].begin()
+        # edited by Caio Hamamura - will get schema aswell
         word_cursor = self.view.substr(self.view.word(position)).strip('\n').strip()
-        sqlreq = "exec sp_helptext @objname = ?"
+        line_cursor = self.view.substr(self.view.line(position)).strip('\n').strip()
+        word_cursor = re.search('\w*?\.?%s' % word_cursor, line_cursor).group(0)
+        # ignore accents
+        sqlreq = "SELECT CAST(OBJECT_DEFINITION (OBJECT_ID(?)) AS VARCHAR(MAX)) Collate SQL_Latin1_General_CP1253_CI_AI [Text]"
+        # end edit
         sqlcon = te_get_connection()
         if sqlcon is not None:
             sqlcon.dbexec(sqlreq, [word_cursor])
@@ -421,6 +427,9 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
                 # new_view.set_syntax_file('Packages/TSQLEasy/TSQL.tmLanguage')
                 new_view.set_line_endings('unix')
                 # new_view.run_command('tsql_easy_insert_text', {'position': 0, 'text': text})
+                # edited by Caio Hamamura - sometimes sublime won't open if file is already closed
+                sleep(0.1)
+                # end edit
                 tf.close()
         else:
             sublime.status_message('No connection to SQL server')
