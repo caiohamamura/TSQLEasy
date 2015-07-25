@@ -410,8 +410,8 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         # self.view.set_syntax_file('Packages/TSQLEasy/TSQL.tmLanguage')
         position = self.view.sel()[0].begin()
-        # edited by Caio Hamamura - will get schema aswell
         word_cursor = self.view.substr(self.view.word(position)).strip('\n').strip()
+        # edited by Caio Hamamura - will get schema aswell
         line_cursor = self.view.substr(self.view.line(position)).strip('\n').strip()
         word_cursor = re.search('\w*?\.?%s' % word_cursor, line_cursor).group(0)
         # end edit
