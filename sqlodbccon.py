@@ -39,7 +39,6 @@ class SQLCon:
         self.dbconnect()
 
     def _get_connection_string(self):
-<<<<<<< HEAD
         if self.username == 'Trusted':
             if self.server == '(local)':
                 connection_string = 'DRIVER={%s};SERVER=%s;DATABASE=%s;Trusted_Connection=yes' % (self.driver, self.server, self.database)
@@ -48,20 +47,14 @@ class SQLCon:
         else:
             connection_string = 'DRIVER={%s};SERVER=%s,%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.serverport, self.database, self.username, self.password)
         return connection_string
-=======
-        return 'DRIVER={%s};SERVER=%s,%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.serverport, self.database, self.username, self.password)
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
 
     def dbconnect(self):
         self.sqlconnection = None
         self.sqlcursor = None
         try:
-<<<<<<< HEAD
             f=open('D:/Desktop/teste.txt','w')
             f.write(self.connection_string)
             f.close()
-=======
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
             self.sqlconnection = pyodbc.connect(self.connection_string, autocommit=self.autocommit, timeout=self.timeout)
             if self.autocommit:
                 self.sqlconnection.autocommit = True
@@ -90,10 +83,6 @@ class SQLCon:
 
         if self.sqlcursor is None or self.sqlconnection is None:
             raise Exception("SQL: No connection to server")
-<<<<<<< HEAD
-=======
-
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
         try:
             if sql_params:
                 self.sqlcursor.execute(sql_string, sql_params)

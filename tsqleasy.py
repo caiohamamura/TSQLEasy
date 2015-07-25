@@ -87,10 +87,6 @@ def te_get_connection():
         database = server_list[server_active]['database']
         autocommit = server_list[server_active]['autocommit'] if 'autocommit' in server_list[server_active] else True
         timeout = server_list[server_active]['timeout'] if 'timeout' in server_list[server_active] else 0
-<<<<<<< HEAD
-=======
-
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
         sqlcon = sqlodbccon.SQLCon(server=server, driver=driver, serverport=server_port, username=username, password=password, database=database, sleepsecs="5", autocommit=autocommit, timeout=timeout)
         return sqlcon
     else:
@@ -369,7 +365,6 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                 row_as_dict = {}
                 if not column_names:
                     # column sql name and printed name will be the same
-<<<<<<< HEAD
                     # edited by Caio Hamamura - will encode to defined encoding if it is a unicode column
                     title_row = self.sqlcon.sqlcolumns
                     column_names = True
@@ -382,15 +377,6 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                 data_rows.append(row_as_dict)
             res_body = self.table_print(data_rows, [[i[0], i[0]] for i in title_row])
             #end edit
-=======
-                    title_row = [(val[0], val[0]) for val in self.sqlcon.sqlcolumns]
-                    column_names = True
-                for col in title_row:
-                    row_as_dict[col[0]] = str(getattr(row, col[0]))
-                data_rows.append(row_as_dict)
-
-            res_body = self.table_print(data_rows, title_row)
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
         else:
             res_body = 'Completed: Result without dataset\n'
         if show_request_in_result:
@@ -426,26 +412,16 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
         word_cursor = self.view.substr(self.view.word(position)).strip('\n').strip()
         line_cursor = self.view.substr(self.view.line(position)).strip('\n').strip()
         word_cursor = re.search('\w*?\.?%s' % word_cursor, line_cursor).group(0)
-<<<<<<< HEAD
         # end edit
         sqlreq = "EXEC sp_helptext ?"
-=======
-        # ignore accents
-        sqlreq = "SELECT CAST(OBJECT_DEFINITION (OBJECT_ID(?)) AS VARCHAR(MAX)) Collate SQL_Latin1_General_CP1253_CI_AI [Text]"
-        # end edit
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
         sqlcon = te_get_connection()
         if sqlcon is not None:
             sqlcon.dbexec(sqlreq, [word_cursor])
             text = ''
             if sqlcon.sqldataset:
-<<<<<<< HEAD
                 # edited by Caio Hamamura - will encode to defined encoding
                 text = ''.join([row.Text.encode(te_get_encodings()) for row in sqlcon.sqldataset])
                 # end edit
-=======
-                text = ''.join([row.Text for row in sqlcon.sqldataset])
->>>>>>> 89c516fe92ae20c06a1862425c6776b8def13a6c
             sqlcon.dbdisconnect()
             if text:
                 prefix = '%s_tmp_' % word_cursor
