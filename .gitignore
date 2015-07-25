@@ -1,2 +1,6 @@
 #python
 *.pyc
+
+#sublime config
+TSQLEasy.sublime-settings
+*.cache

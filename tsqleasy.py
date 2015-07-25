@@ -295,6 +295,7 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
             for query in queries:
                 if query:
                     dt_before = time.time()
+                    sublime.status_message(query)
                     self.sqlcon.dbexec(query)
                     dt_after = time.time()
                     timedelta = dt_after - dt_before
@@ -366,11 +367,12 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                 if not column_names:
                     # column sql name and printed name will be the same
                     # edited by Caio Hamamura - will encode to defined encoding if it is a unicode column
+
                     title_row = self.sqlcon.sqlcolumns
                     column_names = True
                 for col in title_row:
-                    if str(str(col[1]) == str(type(u'a'))):
-                        row_val = unicode(getattr(row, col[0])).encode(te_get_encodings())
+                    if str(col[1]) == str(type(u'a')):
+                        row_val = getattr(row, col[0]).encode(te_get_encodings())
                     else:
                         row_val = str(getattr(row, col[0]))
                     row_as_dict[col[0]] = row_val
