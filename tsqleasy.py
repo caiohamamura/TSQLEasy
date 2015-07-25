@@ -87,7 +87,7 @@ def te_get_connection():
         database = server_list[server_active]['database']
         autocommit = server_list[server_active]['autocommit'] if 'autocommit' in server_list[server_active] else True
         timeout = server_list[server_active]['timeout'] if 'timeout' in server_list[server_active] else 0
-        
+
         sqlcon = sqlodbccon.SQLCon(server=server, driver=driver, serverport=server_port, username=username, password=password, database=database, sleepsecs="5", autocommit=autocommit, timeout=timeout)
         return sqlcon
     else:
