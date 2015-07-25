@@ -2,5 +2,5 @@
 *.pyc
 
 #sublime config
-TSQLEasy.sublime-settings
+package-metadata.json
 *.cache
