@@ -295,7 +295,6 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
             for query in queries:
                 if query:
                     dt_before = time.time()
-                    sublime.status_message(query)
                     self.sqlcon.dbexec(query)
                     dt_after = time.time()
                     timedelta = dt_after - dt_before
