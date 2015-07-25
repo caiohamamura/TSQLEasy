@@ -39,6 +39,7 @@ class SQLCon:
         self.dbconnect()
 
     def _get_connection_string(self):
+         # edited by Caio Hamamura - enable use of Trusted connection and (local) server
         if self.username == 'Trusted':
             if self.server == '(local)':
                 connection_string = 'DRIVER={%s};SERVER=%s;DATABASE=%s;Trusted_Connection=yes' % (self.driver, self.server, self.database)
@@ -47,6 +48,7 @@ class SQLCon:
         else:
             connection_string = 'DRIVER={%s};SERVER=%s,%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.serverport, self.database, self.username, self.password)
         return connection_string
+        # end edit
 
     def dbconnect(self):
         self.sqlconnection = None

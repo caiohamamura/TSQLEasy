@@ -367,7 +367,6 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                 if not column_names:
                     # column sql name and printed name will be the same
                     # edited by Caio Hamamura - will encode to defined encoding if it is a unicode column
-
                     title_row = self.sqlcon.sqlcolumns
                     column_names = True
                 for col in title_row:
@@ -378,7 +377,7 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                     row_as_dict[col[0]] = row_val
                 data_rows.append(row_as_dict)
             res_body = self.table_print(data_rows, [[i[0], i[0]] for i in title_row])
-            #end edit
+            #end edits
         else:
             res_body = 'Completed: Result without dataset\n'
         if show_request_in_result:
