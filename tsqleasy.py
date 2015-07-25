@@ -415,7 +415,7 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
         line_cursor = self.view.substr(self.view.line(position)).strip('\n').strip()
         word_cursor = re.search('\w*?\.?%s' % word_cursor, line_cursor).group(0)
         # end edit
-        sqlreq = "EXEC sp_helptext ?"
+        sqlreq = "exec sp_helptext @objname = ?"
         sqlcon = te_get_connection()
         if sqlcon is not None:
             sqlcon.dbexec(sqlreq, [word_cursor])

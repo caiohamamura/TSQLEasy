@@ -52,9 +52,6 @@ class SQLCon:
         self.sqlconnection = None
         self.sqlcursor = None
         try:
-            f=open('D:/Desktop/teste.txt','w')
-            f.write(self.connection_string)
-            f.close()
             self.sqlconnection = pyodbc.connect(self.connection_string, autocommit=self.autocommit, timeout=self.timeout)
             if self.autocommit:
                 self.sqlconnection.autocommit = True
