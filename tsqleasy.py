@@ -56,6 +56,27 @@ class SQLAlias():
     def get_text_hash(self, text):
         return self.text_hash
 
+# TODO class to store functions: 
+# class SQLProcFuncContainer:
+#     def __init__(self):
+#         self.functions = []
+#         self.params = []
+#         self.schemas = []
+#         self.index = {}
+#         self.last = 0
+#         self.param = 2
+
+#     def add(self, schema, function, param):
+#         if not function in self.functions:
+#             self.functions.append(function)
+#             self.schemas.append(schema)
+#             self.index[function] = self.last
+#             self.params.append(['${1:' + param + '}'])
+#             self.param = 2
+#             self.last += 1
+#         else:
+#             self.params[self.index[function]].append('${'+str(self.param)+':' + param + '}')
+#             self.param += 1
 
 global_alias = SQLAlias()
 # list of tables
@@ -63,6 +84,9 @@ global_alias = SQLAlias()
 sqlreq_tables = 'SELECT Distinct TABLE_NAME as name, TABLE_SCHEMA as schemaname FROM information_schema.TABLES'
 # list of columns
 sqlreq_columns = "SELECT c.name FROM sys.columns c WHERE c.object_id = OBJECT_ID(?)"
+# list functions with parameters
+# sqlreq_functions = "SELECT SCHEMA_NAME(SCHEMA_ID) AS [Schema],SO.name AS [Name],P.name AS [Paramete],CASE WHEN TYPE_NAME(P.user_type_id) LIKE '%char%' THEN TYPE_NAME(P.user_type_id)+'('+CAST(P.max_length AS VARCHAR(4))+')' ELSE TYPE_NAME(P.user_type_id) END AS [ParameterType],P.is_output AS [IsOutPutParameter] FROM sys.objects AS SO LEFT JOIN sys.parameters AS P ON SO.OBJECT_ID = P.OBJECT_ID WHERE SO.OBJECT_ID IN ( SELECT OBJECT_ID FROM sys.objects WHERE TYPE IN ('FN')) AND P.name <> '' ORDER BY [Schema], SO.name, P.parameter_id"
+
 
 
 def te_get_setting(key, default_value=None):
