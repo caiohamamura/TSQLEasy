@@ -59,7 +59,8 @@ class SQLAlias():
 
 global_alias = SQLAlias()
 # list of tables
-sqlreq_tables = 'SELECT Distinct TABLE_NAME as name FROM information_schema.TABLES'
+# edited by Caio Hamamura - will get schema too
+sqlreq_tables = 'SELECT Distinct TABLE_NAME as name, TABLE_SCHEMA as schemaname FROM information_schema.TABLES'
 # list of columns
 sqlreq_columns = "SELECT c.name FROM sys.columns c WHERE c.object_id = OBJECT_ID(?)"
 
@@ -116,7 +117,8 @@ def te_get_alias(string_data):
 def te_get_all_aliases(text):
     # get aliases from substrings FROM and JOIN
     text = text.lower()
-    pattern = r'[^\w](from|join)\s{0,}(\w+)\s(as\s)?\s{0,}(\w+)'
+    # edited by Caio Hamamura - will get schema and square brackets (optionally)
+    pattern = r'[^\w](from|join)\s{0,}(\[?\w+?\]?\.?\[?\w+\]?)\s(as\s)?\s{0,}(\w+)'
     aliases_strings = re.findall(pattern, text)
     if aliases_strings:
         for alias in aliases_strings:
@@ -174,6 +176,19 @@ def te_get_title():
         if file_name:
             return file_name
 
+# added by Caio Hamamura - will check if previous word before '.' is a schema or a table name
+def te_get_parseprevious(position=None):
+    te_reload_aliases_from_file()
+    view = sublime.active_window().active_view()
+    if position is None:
+        position = view.sel()[0].begin() - 1
+    previous_name = view.substr(view.word(position))
+    al = global_alias.get_alias(previous_name.lower())
+    if al == '':
+        return te_get_tables(previous_name)
+    else:
+        return te_get_columns(position)
+# end add
 
 def te_get_columns(position=None):
     te_reload_aliases_from_file()
@@ -201,15 +216,18 @@ def te_get_columns(position=None):
         sqlcon.dbdisconnect()
     return columns
 
-
-def te_get_tables():
+# edited by Caio Hamamura - added schema to arguments to filter tables by schema
+def te_get_tables(schema=''):
     tables = []
     sqlcon = te_get_connection()
     if sqlcon is not None:
         sqlcon.dbexec(sqlreq_tables)
         if sqlcon.sqldataset:
+            # edited by Caio Hamamura - will filter tables by schema
             for row in sqlcon.sqldataset:
-                tables.append(('%s\tSQL table' % row.name, row.name))
+                if schema == '' or row.schemaname.lower() == schema.lower():
+                    tables.append(('%s\tSQL table' % row.name, row.name))
+            # end edit
         sqlcon.dbdisconnect()
     return tables
 
@@ -268,9 +286,11 @@ class TsqlEasyEventDump(sublime_plugin.EventListener):
             pre_position = position - len(word_cursor) - 1
             pre_word_char = view.substr(pre_position).strip('\n').strip()
             if word_cursor == u'.':
-                completions = te_get_columns()
+                # edited by Caio Hamamura - Use function to check if previous is schema or table name
+                completions = te_get_parseprevious()
             elif pre_word_char == u'.':
-                completions = te_get_columns(pre_position)
+                # edited by Caio Hamamura - Use function to check if previous is schema or table name
+                completions = te_get_parseprevious(pre_position)
             else:
                 completions = te_get_tables()
 
@@ -385,10 +405,12 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                           '%s\n'
                           '------ SQL Result -------\n\n' % (self.sql_query))
 
+        record_count = len(data_rows)
+        if record_count == 0: record_count = self.sqlcon.sqlcursor.rowcount
         res_footer = ('\n------ SQL result stats ------\n'
                       'Records count: %s | '
                       'Execution time: %s secs | '
-                      'Received at: %s' % (len(data_rows), round(timedelta, 3), received_time))
+                      'Received at: %s' % (record_count, round(timedelta, 3), received_time))
         return '%s%s%s' % (res_header, res_body, res_footer)
 
 
