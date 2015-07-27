@@ -56,7 +56,7 @@ class SQLAlias():
     def get_text_hash(self, text):
         return self.text_hash
 
-# TODO class to store functions: 
+# TODO container class for functions and procedures: 
 # class SQLProcFuncContainer:
 #     def __init__(self):
 #         self.functions = []
