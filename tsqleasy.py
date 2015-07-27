@@ -220,6 +220,7 @@ def te_get_columns(position=None):
 def te_get_tables(schema=''):
     tables = []
     sqlcon = te_get_connection()
+    if schema == '': schema = sqlcon.defaultschema
     if sqlcon is not None:
         sqlcon.dbexec(sqlreq_tables)
         if sqlcon.sqldataset:
@@ -391,7 +392,9 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                     column_names = True
                 for col in title_row:
                     if str(col[1]) == str(type(u'a')):
-                        row_val = getattr(row, col[0]).encode(te_get_encodings())
+                        row_val = getattr(row, col[0])
+                        if row_val != None:
+                            row_val = getattr(row, col[0]).encode(te_get_encodings())
                     else:
                         row_val = str(getattr(row, col[0]))
                     row_as_dict[col[0]] = row_val

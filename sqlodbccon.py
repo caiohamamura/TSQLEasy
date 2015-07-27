@@ -37,6 +37,7 @@ class SQLCon:
         self.sqlconnection = None
         self.sqlcursor = None
         self.dbconnect()
+        self.defaultschema = self._get_default_schema()
 
     def _get_connection_string(self):
          # edited by Caio Hamamura - enable use of Trusted connection and (local) server
@@ -49,6 +50,13 @@ class SQLCon:
             connection_string = 'DRIVER={%s};SERVER=%s,%s;DATABASE=%s;UID=%s;PWD=%s' % (self.driver, self.server, self.serverport, self.database, self.username, self.password)
         return connection_string
         # end edit
+
+    def _get_default_schema(self):
+        if self.sqlconnection != None:
+            self.dbexec('SELECT SCHEMA_NAME()')
+            if len(self.sqldataset) > 0:
+                return self.sqldataset[0][0]
+
 
     def dbconnect(self):
         self.sqlconnection = None
