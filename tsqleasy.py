@@ -58,6 +58,10 @@ class SQLAlias():
 
 
 global_alias = SQLAlias()
+is_version_3 = False
+# get version
+if sys.version[0] == '3':
+    is_version_3 = True
 # list of tables
 # edited by Caio Hamamura - will get schema too
 sqlreq_tables = 'SELECT Distinct TABLE_NAME as name, TABLE_SCHEMA as schemaname FROM information_schema.TABLES'
@@ -367,7 +371,7 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
             return value.ljust(max_widths[col])
 
         for row in data_copy:
-            row_str = " | ".join([custom_just(col, row[col]) for col in cols_order])
+            row_str = " | ".join([str(custom_just(col, row[col])) for col in cols_order])
             result += '| %s |\n' % (row_str)
             if data_copy.index(row) == 0:
                 underline = "-+-".join(['-' * max_widths[col] for col in cols_order])
@@ -387,16 +391,19 @@ class TsqlEasyExecSqlCommand(sublime_plugin.TextCommand):
                 row_as_dict = {}
                 if not column_names:
                     # column sql name and printed name will be the same
-                    # edited by Caio Hamamura - will encode to defined encoding if it is a unicode column
+                    # edited by Caio Hamamura - will encode to defined encoding if it is a unicode column in version 2
                     title_row = self.sqlcon.sqlcolumns
                     column_names = True
                 for col in title_row:
-                    if str(col[1]) == str(type(u'a')):
-                        row_val = getattr(row, col[0])
-                        if row_val != None:
-                            row_val = getattr(row, col[0]).encode(te_get_encodings())
-                    else:
+                    if is_version_3:
                         row_val = str(getattr(row, col[0]))
+                    else:
+                        if str(col[1]) == str(type(u'a')):
+                            row_val = getattr(row, col[0])
+                            if row_val is not None:
+                                row_val = getattr(row, col[0]).encode(te_get_encodings())
+                        else:
+                            row_val = str(getattr(row, col[0]))
                     row_as_dict[col[0]] = row_val
                 data_rows.append(row_as_dict)
             res_body = self.table_print(data_rows, [[i[0], i[0]] for i in title_row])
@@ -446,7 +453,10 @@ class TsqlEasyOpenServerObjectCommand(sublime_plugin.TextCommand):
             text = ''
             if sqlcon.sqldataset:
                 # edited by Caio Hamamura - will encode to defined encoding
-                text = ''.join([row.Text.encode(te_get_encodings()) for row in sqlcon.sqldataset])
+                if is_version_3:
+                    text = ''.join([row.Text for row in sqlcon.sqldataset])
+                else:
+                    text = ''.join([row.Text.encode(te_get_encodings()) for row in sqlcon.sqldataset])
                 # end edit
             sqlcon.dbdisconnect()
             if text:
@@ -509,6 +519,6 @@ class TsqlEasyOpenLocalObjectCommand(sublime_plugin.TextCommand):
 
 class TsqlEasyLoad(sublime_plugin.EventListener):
     def on_activated(self, view):
-        if 'TSQL' in view.settings().get('syntax'):
+        if 'SQL' in view.settings().get('syntax'):
             view.settings().set('tsqleasy_is_here', True)
 
