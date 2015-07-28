@@ -12,11 +12,16 @@ import sublime
 import sublime_plugin
 from time import sleep
 
+# edited by Caio Hamamura - added bool checking
+is_version_3 = False
 pythonver = sys.version_info[0]
 if pythonver >= 3:
     from . import sqlodbccon
 else:
     import sqlodbccon
+    is_version_3 = True
+    
+
 
 # TODO: Get procedures (functions) list (with params)
 # TODO: Completions to TSQL operators
@@ -58,10 +63,6 @@ class SQLAlias():
 
 
 global_alias = SQLAlias()
-is_version_3 = False
-# get version
-if sys.version[0] == '3':
-    is_version_3 = True
 # list of tables
 # edited by Caio Hamamura - will get schema too
 sqlreq_tables = 'SELECT Distinct TABLE_NAME as name, TABLE_SCHEMA as schemaname FROM information_schema.TABLES'
