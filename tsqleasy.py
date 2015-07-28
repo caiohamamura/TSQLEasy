@@ -17,9 +17,9 @@ is_version_3 = False
 pythonver = sys.version_info[0]
 if pythonver >= 3:
     from . import sqlodbccon
+    is_version_3 = True
 else:
     import sqlodbccon
-    is_version_3 = True
     
 
 
